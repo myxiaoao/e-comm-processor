@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nats-io/nats-server/v2/server"
 	natsgo "github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,24 +14,8 @@ import (
 	"ecommerce-processor/internal/nats"
 )
 
-func startTestNatsServer() (*server.Server, error) {
-	opts := &server.Options{
-		Host: "127.0.0.1",
-		Port: -1,
-	}
-	ns, err := server.NewServer(opts)
-	if err != nil {
-		return nil, err
-	}
-	go ns.Start()
-	if !ns.ReadyForConnections(5e9) {
-		return nil, err
-	}
-	return ns, nil
-}
-
 func TestActivities_CallNatsService_Success(t *testing.T) {
-	ns, err := startTestNatsServer()
+	ns, err := nats.StartTestServer()
 	if err != nil {
 		t.Skip("NATS server not available")
 	}
@@ -61,7 +44,7 @@ func TestActivities_CallNatsService_Success(t *testing.T) {
 }
 
 func TestActivities_CallNatsService_Failure(t *testing.T) {
-	ns, err := startTestNatsServer()
+	ns, err := nats.StartTestServer()
 	if err != nil {
 		t.Skip("NATS server not available")
 	}

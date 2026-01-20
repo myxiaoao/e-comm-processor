@@ -14,11 +14,10 @@ func TestOrderWorkflow_Success(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	// 注册 Activity 并模拟返回值
-	env.RegisterActivity(CallNatsService)
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
+	env.RegisterActivity(activityRef.CallNatsService)
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
 		Return(domain.ServiceResponse{Success: true, Message: "Payment OK"}, nil)
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectInv, mock.Anything).
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectInv, mock.Anything).
 		Return(domain.ServiceResponse{Success: true, Message: "Inventory OK"}, nil)
 
 	order := domain.Order{
@@ -41,9 +40,8 @@ func TestOrderWorkflow_PaymentFailed(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	env.RegisterActivity(CallNatsService)
-	// 支付失败
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
+	env.RegisterActivity(activityRef.CallNatsService)
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
 		Return(domain.ServiceResponse{Success: false, Message: "Declined"}, nil)
 
 	order := domain.Order{
@@ -65,18 +63,16 @@ func TestOrderWorkflow_CancellationSaga(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	env.RegisterActivity(CallNatsService)
-	// 模拟所有 Activity 成功
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
+	env.RegisterActivity(activityRef.CallNatsService)
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
 		Return(domain.ServiceResponse{Success: true, Message: "Payment OK"}, nil)
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectInv, mock.Anything).
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectInv, mock.Anything).
 		Return(domain.ServiceResponse{Success: true, Message: "Inventory OK"}, nil)
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectRefund, mock.Anything).
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectRefund, mock.Anything).
 		Return(domain.ServiceResponse{Success: true, Message: "Refund OK"}, nil)
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectRestock, mock.Anything).
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectRestock, mock.Anything).
 		Return(domain.ServiceResponse{Success: true, Message: "Restock OK"}, nil)
 
-	// "Golang Book" 触发取消流程
 	order := domain.Order{
 		OrderID: "003",
 		Amount:  99.50,
@@ -97,11 +93,10 @@ func TestOrderWorkflow_InventoryFailed(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	env.RegisterActivity(CallNatsService)
-	// 支付成功，库存失败
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
+	env.RegisterActivity(activityRef.CallNatsService)
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectPay, mock.Anything).
 		Return(domain.ServiceResponse{Success: true, Message: "Payment OK"}, nil)
-	env.OnActivity(CallNatsService, mock.Anything, domain.NatsSubjectInv, mock.Anything).
+	env.OnActivity(activityRef.CallNatsService, mock.Anything, domain.NatsSubjectInv, mock.Anything).
 		Return(domain.ServiceResponse{Success: false, Message: "Out of Stock"}, nil)
 
 	order := domain.Order{

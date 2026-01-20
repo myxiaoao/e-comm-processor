@@ -14,7 +14,7 @@ import (
 
 func TestClient_Request_Success(t *testing.T) {
 	// 启动内嵌 NATS 服务器
-	ns, err := startTestServer()
+	ns, err := StartTestServer()
 	if err != nil {
 		t.Skip("NATS server not available, skipping integration test")
 	}
@@ -41,7 +41,7 @@ func TestClient_Request_Success(t *testing.T) {
 }
 
 func TestClient_Request_Failure(t *testing.T) {
-	ns, err := startTestServer()
+	ns, err := StartTestServer()
 	if err != nil {
 		t.Skip("NATS server not available, skipping integration test")
 	}
@@ -68,7 +68,7 @@ func TestClient_Request_Failure(t *testing.T) {
 }
 
 func TestClient_Request_Timeout(t *testing.T) {
-	ns, err := startTestServer()
+	ns, err := StartTestServer()
 	if err != nil {
 		t.Skip("NATS server not available, skipping integration test")
 	}
