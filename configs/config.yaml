@@ -1,0 +1,10 @@
+temporal:
+  host: localhost:7233
+  task_queue: ORDER_QUEUE
+
+nats:
+  url: nats://localhost:4222
+  timeout: 2s
+
+activity:
+  timeout: 5s
